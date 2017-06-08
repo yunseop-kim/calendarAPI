@@ -19,7 +19,7 @@ const loginHandler = (req, res) => {
     res.end(JSON.stringify(cj));
 }
 
-const loginTemplateHandler = (req, res) =>{
+const loginTemplateHandler = (req, res) => {
     base = 'http://' + req.headers.host;
     path = url.parse(req.url).pathname;
 
@@ -56,6 +56,17 @@ const createLoginTemplateRepresentation = () => {
 
 }
 
+const createLoginFromTemplate = (template) => {
+    let login = {};
+    let data = template.template.data;
+    
+    data.map((value, index)=>{
+        login[value.name] = value.value;
+    });
+    
+    return login;
+}
+
 // render write template (POST, PUT)
 function renderTemplate() {
     var template = {};
@@ -78,4 +89,4 @@ function renderTemplate() {
     cj.collection.template = template;
 }
 
-export { loginHandler, loginTemplateHandler };
+export { loginHandler, loginTemplateHandler, createLoginFromTemplate };
