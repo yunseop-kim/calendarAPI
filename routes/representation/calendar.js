@@ -1,4 +1,5 @@
-import url from 'url';
+import { errorHandler } from './error';
+
 let path = '';
 let base = '';
 const cType = 'application/json'
@@ -12,45 +13,153 @@ const calendarHandler = (req, res) => {
     createCalendarRepresentation();
     // renderQueries();
 
-    res.writeHead(200, 'OK',
+    res.status(200).set(
         {
             'Content-Type': cType,
             'Access-Control-Allow-Origin': '*'
         }
-    );
-    res.end(JSON.stringify(cj));
+    ).send(JSON.stringify(cj));
 }
 
-const monthlyCalendarHandler = (req, res) => {
+const calendarTemplateHandler = (req, res) => {
+    base = 'http://' + req.headers.host;
+    path = req.originalUrl;
+    createCalendarTemplateRepresentation();
+    renderTemplate();
+
+    res.status(200).set(
+        {
+            'Content-Type': cType,
+            'Access-Control-Allow-Origin': '*'
+        }
+    ).send(JSON.stringify(cj));
+}
+
+const createCalendarTemplateRepresentation = () => {
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = base + path;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/calendar' });
+
+}
+
+// render write template (POST, PUT)
+function renderTemplate() {
+    var template = {};
+    var item = {};
+
+    template.data = [];
+
+    item = {};
+    item.name = 'title';
+    item.value = '';
+    item.prompt = 'Title';
+    template.data.push(item);
+
+    item = {};
+    item.name = 'start_date';
+    item.value = '';
+    item.prompt = 'Start Date';
+    template.data.push(item);
+
+    item = {};
+    item.name = 'end_date';
+    item.value = '';
+    item.prompt = 'End Date';
+    template.data.push(item);
+
+    cj.collection.template = template;
+}
+
+const monthlyCalendarHandler = (req, res, schedules) => {
     base = 'http://' + req.headers.host;
     path = req.originalUrl
 
-    createMonthlyCalendarRepresentation();
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = base + path;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base + "/calendar" });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template' });
+
+    cj.collection.items = [];
+    cj.collection.queries = [];
+
     renderQueries();
 
-    res.writeHead(200, 'OK',
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    );
-    res.end(JSON.stringify(cj));
+    schedules.map(schedule => {
+        cj.collection.items.push({
+            href: base + path + '/' + schedule.idx,
+            data: [
+                {
+                    name: "title",
+                    value: schedule.title,
+                    prompt: "title"
+                },
+                {
+                    name: "startDate",
+                    value: schedule.start_date,
+                    prompt: "start date"
+                },
+                {
+                    name: "endDate",
+                    value: schedule.end_date,
+                    prompt: "end date"
+                }
+            ]
+        });
+    });
+
+    res.status(200).set({
+        'Content-Type': cType,
+        'Access-Control-Allow-Origin': '*'
+    }).send(JSON.stringify(cj));
 }
 
-const dailyCalendarHandler = (req, res) => {
+const dailyCalendarHandler = (req, res, result) => {
     base = 'http://' + req.headers.host;
     path = req.originalUrl
 
-    createDailyCalendarRepresentation();
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = base + path;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/calendar/schedule' });
+
+    cj.collection.items = [];
 
 
-    res.writeHead(200, 'OK',
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    );
-    res.end(JSON.stringify(cj));
+    result.map(element => {
+        cj.collection.items.push({
+            href: base + path,
+            data: [
+                {
+                    name: "title",
+                    value: element.title,
+                    prompt: "title"
+                },
+                {
+                    name: "startDate",
+                    value: element.start_date,
+                    prompt: "start date"
+                },
+                {
+                    name: "endDate",
+                    value: element.end_date,
+                    prompt: "end date"
+                }
+            ]
+        });
+    });
+
+    res.status(200).set({
+        'Content-Type': cType,
+        'Access-Control-Allow-Origin': '*'
+    }).send(JSON.stringify(cj));
 }
 
 // render supported queries as valid Cj query elements
@@ -84,74 +193,21 @@ const createCalendarRepresentation = () => {
     // cj.collection.queries = [];
 }
 
-// the basic template for all Cj responses
-const createMonthlyCalendarRepresentation = () => {
-    cj.collection = {};
-    cj.collection.version = "1.0";
-    cj.collection.href = base + path;
+const createCalendarFromTemplate = (template) => {
+    let calendar = {};
+    let data = template.template.data;
 
-    cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + "/calendar"});
-    cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template'});
-
-    cj.collection.items = [];
-    cj.collection.queries = [];
-
-    for (var i = 1; i <= 30; i++) {
-        cj.collection.items.push({
-            href: base + path + '/' + i,
-            data: [
-                {
-                    name: "title",
-                    value: "title" + i,
-                    prompt: "title"
-                },
-                {
-                    name: "startDate",
-                    value: "2017-06-xx",
-                    prompt: "start date"
-                },
-                {
-                    name: "endDate",
-                    value: "2017-06-xx",
-                    prompt: "end date"
-                }
-            ]
-        });
-    }
-}
-
-// the basic template for all Cj responses
-const createDailyCalendarRepresentation = () => {
-    cj.collection = {};
-    cj.collection.version = "1.0";
-    cj.collection.href = base + path;
-
-    cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/calendar/schedule' });
-
-    cj.collection.items = [];
-
-    cj.collection.items.push({
-        href: base + path,
-        data: [
-            {
-                name: "title",
-                value: "title" + 13,
-                prompt: "title"
-            },
-            {
-                name: "startDate",
-                value: "2017-06-xx",
-                prompt: "start date"
-            },
-            {
-                name: "endDate",
-                value: "2017-06-xx",
-                prompt: "end date"
-            }
-        ]
+    data.map((element, index) => {
+        calendar[element.name] = element.value;
     });
+
+    return calendar;
 }
 
-export { calendarHandler, monthlyCalendarHandler, dailyCalendarHandler };
+export {
+    calendarHandler,
+    calendarTemplateHandler,
+    monthlyCalendarHandler,
+    dailyCalendarHandler,
+    createCalendarFromTemplate
+};

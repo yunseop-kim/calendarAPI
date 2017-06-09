@@ -9,13 +9,12 @@ const loginHandler = (req, res) => {
 
     createLoginRepresentation();
 
-    res.writeHead(200, 'OK',
+    res.status(200).set(
         {
             'Content-Type': cType,
             'Access-Control-Allow-Origin': '*'
         }
-    );
-    res.end(JSON.stringify(cj));
+    ).send(JSON.stringify(cj));
 }
 
 const loginTemplateHandler = (req, res) => {
@@ -24,13 +23,12 @@ const loginTemplateHandler = (req, res) => {
     createLoginTemplateRepresentation();
     renderTemplate();
 
-    res.writeHead(200, 'OK',
+    res.status(200).set(
         {
             'Content-Type': cType,
             'Access-Control-Allow-Origin': '*'
         }
-    );
-    res.end(JSON.stringify(cj));
+    ).send(JSON.stringify(cj));
 }
 
 // the basic template for all Cj responses
