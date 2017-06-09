@@ -7,7 +7,7 @@ var friends = [];
 
 const calendarHandler = (req, res) => {
     base = 'http://' + req.headers.host;
-    path = url.parse(req.url).pathname;
+    path = req.originalUrl
 
     createCalendarRepresentation();
     // renderQueries();
@@ -23,7 +23,7 @@ const calendarHandler = (req, res) => {
 
 const monthlyCalendarHandler = (req, res) => {
     base = 'http://' + req.headers.host;
-    path = url.parse(req.url).pathname;
+    path = req.originalUrl
 
     createMonthlyCalendarRepresentation();
     renderQueries();
@@ -39,7 +39,7 @@ const monthlyCalendarHandler = (req, res) => {
 
 const dailyCalendarHandler = (req, res) => {
     base = 'http://' + req.headers.host;
-    path = url.parse(req.url).pathname;
+    path = req.originalUrl
 
     createDailyCalendarRepresentation();
 

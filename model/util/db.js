@@ -21,9 +21,6 @@ function query(sql, values) {
                 console.log('model > util > query > error --->', error);
                 connection.release();
                 if (!error) {
-                    if(results.length === 1){
-                        resolve(results[0]);
-                    }
                     resolve(results);
                 }
             });

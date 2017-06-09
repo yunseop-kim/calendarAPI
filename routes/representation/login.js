@@ -1,4 +1,3 @@
-import url from 'url';
 let path = '';
 let base = '';
 const cType = 'application/json'
@@ -6,7 +5,7 @@ let cj = {};
 
 const loginHandler = (req, res) => {
     base = 'http://' + req.headers.host;
-    path = url.parse(req.url).pathname;
+    path = req.originalUrl;
 
     createLoginRepresentation();
 
@@ -21,8 +20,7 @@ const loginHandler = (req, res) => {
 
 const loginTemplateHandler = (req, res) => {
     base = 'http://' + req.headers.host;
-    path = url.parse(req.url).pathname;
-
+    path = req.originalUrl;
     createLoginTemplateRepresentation();
     renderTemplate();
 
@@ -59,11 +57,11 @@ const createLoginTemplateRepresentation = () => {
 const createLoginFromTemplate = (template) => {
     let login = {};
     let data = template.template.data;
-    
-    data.map((value, index)=>{
+
+    data.map((value, index) => {
         login[value.name] = value.value;
     });
-    
+
     return login;
 }
 

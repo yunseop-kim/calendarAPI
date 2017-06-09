@@ -8,6 +8,9 @@ import logger from 'morgan';
 import path from 'path';
 import lessMiddleware from 'less-middleware';
 import index from './routes/index';
+import login from './routes/api/loginAPI';
+import calendar from './routes/api/calendarAPI';
+import accessTokenHandler from './routes/api/accessTokenHandler';
 
 const app = express();
 const debug = Debug('calendar-api:app');
@@ -29,7 +32,8 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-
+app.use('/login', login);
+app.use('/calendar', [accessTokenHandler, calendar]);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');

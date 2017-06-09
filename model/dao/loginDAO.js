@@ -7,9 +7,10 @@ const SHA256 = 'sha256';
 const TOKEN_SIZE = 32;
 
 class loginDAO {
-    constructor(req, res) {
+    constructor(req, res, next) {
         this.req = req;
         this.res = res;
+        this.next = next;
     }
 
     create(email, password) {
@@ -23,23 +24,14 @@ class loginDAO {
             yield self.checkPassword(userInfo, password);
             yield self.createToken(userInfo);
             let tokenObj = yield self.getToken(userInfo.idx);
+
             return tokenObj.token;
         }).then((token) => {
-            console.log(token);
-
             self.res.set('Access-Token', token);
             self.res.status(201).end();
         }, (err) => {
             console.error(err);
         });
-    }
-
-    find() {
-
-    }
-
-    remove() {
-
     }
 
     checkPassword(userInfo, password) {
@@ -48,7 +40,7 @@ class loginDAO {
                 reject('User not found.');
             }
 
-            let admin = userInfo;
+            let admin = userInfo[0];
             let hash = this.generateHash(password);
             if (hash != admin.password) {
                 reject('Invalid parameter.');
@@ -65,7 +57,7 @@ class loginDAO {
             token: self.generateToken(),
             created: new Date(),
             expired: self.getDefaultTokenExpireTime(),
-            users_idx: userInfo.idx
+            users_idx: userInfo[0].idx
         }
 
         return db.query(sql, values);
