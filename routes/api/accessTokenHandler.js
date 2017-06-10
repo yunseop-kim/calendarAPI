@@ -13,8 +13,6 @@ function accessTokenHandler(req, res, next) {
         params = [token];
         result = yield db.query(sql, params);
 
-        console.log('result:', result);
-
         if (result.length < 1) {
             return Promise.reject({
                 code: '4000',

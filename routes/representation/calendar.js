@@ -73,7 +73,41 @@ function renderTemplate() {
     cj.collection.template = template;
 }
 
-const monthlyCalendarHandler = (req, res, schedules) => {
+const monthlyCalendarHandler = (req, res, year, month) => {
+    base = 'http://' + req.headers.host;
+    path = req.originalUrl
+    var lastDay = new Date(year, month, 0).getDate();
+
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = base + path;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base + "/calendar" });
+    // cj.collection.links.push({ 'rel': 'prev', 'href': base + "/calendar" });
+    // cj.collection.links.push({ 'rel': 'next', 'href': base + "/calendar" });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + '/calendar/template' });
+
+    cj.collection.items = [];
+
+    for (let i = 1; i <= lastDay; i++) {
+        if ( i < 10){
+            i = '0' + i;
+        }
+
+        cj.collection.items.push({
+            href: base + '/' + year + '/' + month + '/' + i + '/schedule'
+        });
+    }
+
+    res.status(200).set({
+        'Content-Type': cType,
+        'Access-Control-Allow-Origin': '*'
+    }).send(JSON.stringify(cj));
+}
+
+const dailyCalendarHandler = (req, res, result) => {
+    let { year, month } = req.params;
     base = 'http://' + req.headers.host;
     path = req.originalUrl
 
@@ -82,31 +116,31 @@ const monthlyCalendarHandler = (req, res, schedules) => {
     cj.collection.href = base + path;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + "/calendar" });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template' });
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/' + year +'/' + month + '/schedule' });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + '/calendar/template' });
+    // cj.collection.links.push({ 'rel': 'prev', 'href': base + '/' + year +'/' + month + '/schedule' });
+    // cj.collection.links.push({ 'rel': 'next', 'href': base + '/' + year +'/' + month + '/schedule' });
 
     cj.collection.items = [];
-    cj.collection.queries = [];
 
-    renderQueries();
 
-    schedules.map(schedule => {
+    result.map(element => {
         cj.collection.items.push({
-            href: base + path + '/' + schedule.idx,
+            href: base + path + '/' + element.idx,
             data: [
                 {
                     name: "title",
-                    value: schedule.title,
+                    value: element.title,
                     prompt: "title"
                 },
                 {
                     name: "startDate",
-                    value: schedule.start_date,
+                    value: element.start_date,
                     prompt: "start date"
                 },
                 {
                     name: "endDate",
-                    value: schedule.end_date,
+                    value: element.end_date,
                     prompt: "end date"
                 }
             ]
@@ -119,7 +153,8 @@ const monthlyCalendarHandler = (req, res, schedules) => {
     }).send(JSON.stringify(cj));
 }
 
-const dailyCalendarHandler = (req, res, result) => {
+const calendarDetailHandler = (req, res, result) => {
+    let { year, month, day, idx } = req.params;
     base = 'http://' + req.headers.host;
     path = req.originalUrl
 
@@ -128,7 +163,10 @@ const dailyCalendarHandler = (req, res, result) => {
     cj.collection.href = base + path;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/calendar/schedule' });
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + '/calendar/template' });
+    // cj.collection.links.push({ 'rel': 'prev', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
+    // cj.collection.links.push({ 'rel': 'next', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
 
     cj.collection.items = [];
 
@@ -209,5 +247,6 @@ export {
     calendarTemplateHandler,
     monthlyCalendarHandler,
     dailyCalendarHandler,
+    calendarDetailHandler,
     createCalendarFromTemplate
 };
