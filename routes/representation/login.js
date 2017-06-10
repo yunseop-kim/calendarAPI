@@ -1,3 +1,5 @@
+import { headerSet } from '../util/httpHeaders';
+
 let path = '';
 let base = '';
 const cType = 'application/json'
@@ -9,12 +11,7 @@ const loginHandler = (req, res) => {
 
     createLoginRepresentation();
 
-    res.status(200).set(
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    ).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const loginTemplateHandler = (req, res) => {
@@ -23,12 +20,7 @@ const loginTemplateHandler = (req, res) => {
     createLoginTemplateRepresentation();
     renderTemplate();
 
-    res.status(200).set(
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    ).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 // the basic template for all Cj responses

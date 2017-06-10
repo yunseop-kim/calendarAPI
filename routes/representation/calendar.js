@@ -1,4 +1,5 @@
 import { errorHandler } from './error';
+import { headerSet } from '../util/httpHeaders';
 
 let path = '';
 let base = '';
@@ -13,12 +14,7 @@ const calendarHandler = (req, res) => {
     createCalendarRepresentation();
     // renderQueries();
 
-    res.status(200).set(
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    ).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const calendarTemplateHandler = (req, res) => {
@@ -27,12 +23,7 @@ const calendarTemplateHandler = (req, res) => {
     createCalendarTemplateRepresentation();
     renderTemplate();
 
-    res.status(200).set(
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    ).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const createCalendarTemplateRepresentation = () => {
@@ -100,10 +91,7 @@ const monthlyCalendarHandler = (req, res, year, month) => {
         });
     }
 
-    res.status(200).set({
-        'Content-Type': cType,
-        'Access-Control-Allow-Origin': '*'
-    }).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const dailyCalendarHandler = (req, res, result) => {
@@ -147,10 +135,7 @@ const dailyCalendarHandler = (req, res, result) => {
         });
     });
 
-    res.status(200).set({
-        'Content-Type': cType,
-        'Access-Control-Allow-Origin': '*'
-    }).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const calendarDetailHandler = (req, res, result) => {
@@ -194,10 +179,7 @@ const calendarDetailHandler = (req, res, result) => {
         });
     });
 
-    res.status(200).set({
-        'Content-Type': cType,
-        'Access-Control-Allow-Origin': '*'
-    }).send(JSON.stringify(cj));
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 // render supported queries as valid Cj query elements

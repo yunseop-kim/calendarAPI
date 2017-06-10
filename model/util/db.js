@@ -1,6 +1,7 @@
 import * as mysql from 'mysql';
 
 // Initialize pool
+// todo : check mysql is running
 const pool = mysql.createPool({
     connectionLimit: 10,
     host: '127.0.0.1',

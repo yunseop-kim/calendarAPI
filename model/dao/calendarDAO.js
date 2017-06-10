@@ -1,11 +1,11 @@
 import * as db from '../util/db';
 import co from 'co';
 
-function create(token, values) {
+function create(template, token) {
     return co(function* () {
         let userIdx = yield db.query('select users_idx from access_token where token=?', [token]);
-        values = Object.assign(values, userIdx[0]);
-        let result = yield db.query('insert into schedules set ?', values);
+        template = Object.assign(template, userIdx[0]);
+        let result = yield db.query('insert into schedules set ?', template);
 
         return result;
     });

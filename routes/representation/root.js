@@ -1,4 +1,6 @@
 import url from 'url';
+import { headerSet } from '../util/httpHeaders';
+
 let path = '';
 let base = '';
 const cType = 'application/json'
@@ -10,12 +12,7 @@ const handler = (req, res) => {
 
     createCjTemplate();
 
-    res.writeHead(200, 'OK',
-        {
-            'Content-Type': cType,
-            'Access-Control-Allow-Origin': '*'
-        }
-    );
+    res.writeHead(200, 'OK', headerSet);
     res.end(JSON.stringify(cj));
 }
 
