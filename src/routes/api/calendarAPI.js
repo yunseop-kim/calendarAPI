@@ -3,12 +3,18 @@ import * as calendar from '../representation/calendar';
 import * as error from '../representation/error';
 import * as dao from '../../model/dao/calendarDAO';
 import { headerSet } from '../util/httpHeaders';
-import * as requestUrlUtil from '../util/requestUrlUtil';
+import * as util from '../util/requestUrlUtil';
 
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
   calendar.calendarHandler(req, res);
+});
+
+router.get('/schedule', (req, res, next) => {
+  let date = req.query.date;
+
+  calendar.calendarScheduleHandler(req, res, date);
 });
 
 router.get('/schedule/:idx', (req, res, next) => {

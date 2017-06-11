@@ -1,5 +1,6 @@
 import url from 'url';
 import { headerSet } from '../util/httpHeaders';
+import * as util from '../util/requestUrlUtil';
 
 let path = '';
 let base = '';
@@ -7,7 +8,7 @@ const cType = 'application/json'
 let cj = {};
 
 const handler = (req, res) => {
-    base = 'http://' + req.headers.host;
+    base = util.getBaseUrl(req)
     path = url.parse(req.url).pathname;
 
     createCjTemplate();
@@ -20,7 +21,7 @@ const handler = (req, res) => {
 const createCjTemplate = () => {
     cj.collection = {};
     cj.collection.version = "1.0";
-    cj.collection.href = base + path;
+    cj.collection.href = href;
 
     cj.collection.links = [];
     cj.collection.links.push({ 'rel': 'home', 'href': base });

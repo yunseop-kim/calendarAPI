@@ -1,4 +1,5 @@
 import { headerSet } from '../util/httpHeaders';
+import * as util from '../util/requestUrlUtil';
 
 let path = '';
 let base = '';
@@ -6,57 +7,30 @@ const cType = 'application/json'
 let cj = {};
 
 const loginHandler = (req, res) => {
-    base = 'http://' + req.headers.host;
-    path = req.originalUrl;
+    base = util.getBaseUrl(req)
+    let href = util.getUrlByAppendPath(req);
 
-    createLoginRepresentation();
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = href;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template' });
 
     res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const loginTemplateHandler = (req, res) => {
-    base = 'http://' + req.headers.host;
-    path = req.originalUrl;
-    createLoginTemplateRepresentation();
-    renderTemplate();
-
-    res.status(200).set(headerSet).send(JSON.stringify(cj));
-}
-
-// the basic template for all Cj responses
-const createLoginRepresentation = () => {
+    base = util.getBaseUrl(req)
+    let href = util.getUrlByAppendPath(req);
     cj.collection = {};
     cj.collection.version = "1.0";
-    cj.collection.href = base + path;
-
-    cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template' });
-}
-
-const createLoginTemplateRepresentation = () => {
-    cj.collection = {};
-    cj.collection.version = "1.0";
-    cj.collection.href = base + path;
+    cj.collection.href = href;
 
     cj.collection.links = [];
     cj.collection.links.push({ 'rel': 'up', 'href': base + '/login' });
 
-}
-
-const createLoginFromTemplate = (template) => {
-    let login = {};
-    let data = template.template.data;
-
-    data.map((value, index) => {
-        login[value.name] = value.value;
-    });
-
-    return login;
-}
-
-// render write template (POST, PUT)
-function renderTemplate() {
     var template = {};
     var item = {};
 
@@ -75,6 +49,20 @@ function renderTemplate() {
     template.data.push(item);
 
     cj.collection.template = template;
+
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
+}
+
+
+const createLoginFromTemplate = (template) => {
+    let login = {};
+    let data = template.template.data;
+
+    data.map((value, index) => {
+        login[value.name] = value.value;
+    });
+
+    return login;
 }
 
 export { loginHandler, loginTemplateHandler, createLoginFromTemplate };

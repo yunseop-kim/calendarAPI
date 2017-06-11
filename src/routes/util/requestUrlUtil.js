@@ -20,11 +20,11 @@ function getParentUrlOfRequest(req, howManyDepth) {
 	delete p.search;
 
 	var path = p.pathname.split('/');
-	for (var i=0; i < howManyDepth; i++) {
+	for (var i = 0; i < howManyDepth; i++) {
 		path.pop();
 	}
 	p.pathname = path.join('/');
-	
+
 	return url.format(p);
 }
 
@@ -48,7 +48,7 @@ function getUrlByAppendPathToRequest(req, pathToAppend, keepQuery, keepHash) {
 		path.push(pathToAppend);
 	}
 	p.pathname = path.join('/');
-	
+
 	return url.format(p);
 }
 
@@ -65,10 +65,10 @@ function getUrlByAppendQueryToRequest(req, params) {
 			continue;
 		}
 
-		if (params[key]!=0  && !params[key]) {
+		if (params[key] != 0 && !params[key]) {
 			continue;
 		}
-		
+
 		p.query[key] = params[key];
 	}
 
@@ -87,7 +87,7 @@ function hasInvalidDateFormatInQuery(queries) {
 		}
 
 		var d = new Date(q);
-		if (Object.prototype.toString.call(d)!=='[object Date]') {
+		if (Object.prototype.toString.call(d) !== '[object Date]') {
 			return true;
 		}
 
@@ -99,13 +99,51 @@ function hasInvalidDateFormatInQuery(queries) {
 }
 
 
+function parseDate(input, key) {
+	console.log('parseDate > input --->', input);
+	let date = input ? new Date(input) : new Date();
+	let month, day = date.getDate();
+	switch (key) {
+		case 'prev':
+			month = date.getMonth() - 1;
+			date.setMonth(month);
+			break;
+		case 'next':
+			month = date.getMonth() + 1
+			date.setMonth(month);
+			break;
+		default:
+			break;
+	}
+	month = date.getMonth() + 1;
+
+	return {
+		year: date.getFullYear(),
+		month: month < 10 ? ("0" + month) : month,
+		day: day < 10 ? ("0" + day) : day
+	}
+}
+
+function getMonthlyCalendarUrl(base, date, key) {
+	let { year, month } = parseDate(date, key);
+	return base + '/calendar' + '/' + year + '/' + month;
+}
+
+function getDailyCalendarUrl(base, date, key) {
+	let { year, month, day } = parseDate(date, key);
+	return base + '/calendar' + '/' + year + '/' + month + '/' + day;
+}
+
+
 module.exports = {
-	getBaseUrl : getBaseUrlOfRequest,
-	getRequestUrl : getRequestUrl,
-	getParentUrl : getParentUrlOfRequest,
-	getUrlByAppendPath : getUrlByAppendPathToRequest,
-	getUrlByAppendQuery : getUrlByAppendQueryToRequest,
-	hasInvalidDateQuery : hasInvalidDateFormatInQuery
+	getBaseUrl: getBaseUrlOfRequest,
+	getRequestUrl: getRequestUrl,
+	getParentUrl: getParentUrlOfRequest,
+	getUrlByAppendPath: getUrlByAppendPathToRequest,
+	getUrlByAppendQuery: getUrlByAppendQueryToRequest,
+	hasInvalidDateQuery: hasInvalidDateFormatInQuery,
+	getMonthlyCalendarUrl: getMonthlyCalendarUrl,
+	getDailyCalendarUrl: getDailyCalendarUrl,
 };
 
 // todo : calendar api rules...
