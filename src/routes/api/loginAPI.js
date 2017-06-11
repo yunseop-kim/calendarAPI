@@ -16,12 +16,7 @@ router.get('/template', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
     let loginTemplate = login.createLoginFromTemplate(req.body);
-
-    if (!loginTemplate) {
-        // send error
-        return;
-    }
-
+    console.log('logintemp',loginTemplate);
     dao.create(loginTemplate.email, loginTemplate.password)
         .then((result) => {
             let token = result[0].token;

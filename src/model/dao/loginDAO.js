@@ -11,11 +11,18 @@ const TOKEN_SIZE = 32;
 function create(email, password) {
     let sql = "select * from users where email=?";
     let values = [email];
-    let userInfo = db.query(sql, values);
-    
 
     return co(function* () {
+        if((!email || !password)){
+            yield Promise.reject(ERROR.EMPTY_VALUE);
+        }
+        
         let userInfo = yield db.query(sql, values);
+        
+        if (userInfo.length < 1) {
+            yield Promise.reject(ERROR.INVALID_INPUT);
+        }
+        
         yield checkPassword(userInfo, password);
         yield createToken(userInfo);
         let result = yield getToken(userInfo[0].idx);
@@ -26,10 +33,6 @@ function create(email, password) {
 
 function checkPassword(userInfo, password) {
     return new Promise((resolve, reject) => {
-        if (userInfo.length < 1) {
-            reject(ERROR.RESOURCE_NOT_FOUND);
-        }
-
         let admin = userInfo[0];
         let hash = generateHash(password);
         if (hash != admin.password) {
