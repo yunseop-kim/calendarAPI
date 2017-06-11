@@ -1,7 +1,6 @@
+# https://github.com/github/gitignore/blob/master/Node.gitignore #
+##################################################################
 
-# Created by https://www.gitignore.io/api/node
-
-### Node ###
 # Logs
 logs
 *.log
@@ -61,5 +60,6 @@ typings/
 # dotenv environment variables file
 .env
 
-
-# End of https://www.gitignore.io/api/node
+# Custom
+.idea
+dist
