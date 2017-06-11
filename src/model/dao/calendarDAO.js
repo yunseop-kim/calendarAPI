@@ -64,6 +64,23 @@ function detail(idx, token) {
     });
 }
 
+function find(search, token) {
+    return co(function* () {
+        let sql = `
+        SELECT * 
+        FROM schedules 
+        WHERE users_idx = (SELECT users_idx 
+                            FROM access_token 
+                            WHERE token=?)
+        AND title like '%${search}%'
+        `;
+        let values = [token, search];
+        let result = yield db.query(sql, values);
+
+        return result;
+    });
+}
+
 // todo: groupName update
 function modify(idx, template, token) {
     let { title, start_date, end_date } = template;
@@ -108,4 +125,4 @@ function remove(idx, token) {
     });
 }
 
-export { create, daily, detail, modify, remove };
+export { create, daily, detail, modify, remove, find };

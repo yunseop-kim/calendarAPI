@@ -17,6 +17,22 @@ router.get('/schedule', (req, res, next) => {
   calendar.calendarScheduleHandler(req, res, date);
 });
 
+// It is unclear whether it represents only the selected group.
+router.get('/schedule/find', (req, res, next) => {
+  let search = req.query.query;
+  let token = req.get('Access-Token');
+
+  dao.find(search, token).then(result => {
+    calendar.findCalendarHandler(req, res, result);
+  }).catch(err => {
+    error.errorHandler(req, res, {
+      code: '1000',
+      title: 'Error Ocurred',
+      message: err
+    });
+  });
+});
+
 router.get('/schedule/:idx', (req, res, next) => {
   let idx = req.params.idx;
   let token = req.get('Access-Token');
@@ -41,7 +57,7 @@ router.put('/schedule/:idx', (req, res, next) => {
   // todo: make getAccessToken Util
   dao.modify(idx, calendarTemplate, token)
     .then(result => {
-      res.status(200).set(headerSet).end();
+      res.status(204).set(headerSet).end();
     }).catch(err => {
       error.errorHandler(req, res, {
         code: '1000',

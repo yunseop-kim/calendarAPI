@@ -11,30 +11,32 @@ var friends = [];
 const groupHandler = (req, res) => {
     base = util.getBaseUrl(req)
     let href = util.getUrlByAppendPath(req);
+    let parentUrl = util.getParentUrl(req);
 
     cj.collection = {};
     cj.collection.version = "1.0";
     cj.collection.href = href;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template' });
-    cj.collection.links.push({ 'rel': 'list', 'href': base + path + '/list' });
+    cj.collection.links.push({ 'rel': 'up', 'href': parentUrl });
+    cj.collection.links.push({ 'rel': 'template', 'href': href + '/template' });
+    cj.collection.links.push({ 'rel': 'list', 'href': href + '/list' });
 
     res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
 const groupListHandler = (req, res, result) => {
     base = util.getBaseUrl(req)
-    let href = util.getUrlByAppendPath(req);;
+    let href = util.getUrlByAppendPath(req);
+    let parentUrl = util.getParentUrl(req);
 
     cj.collection = {};
     cj.collection.version = "1.0";
     cj.collection.href = href;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/group' });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + '/template' });
+    cj.collection.links.push({ 'rel': 'up', 'href': parentUrl });
+    cj.collection.links.push({ 'rel': 'template', 'href': parentUrl + '/template' });
 
     cj.collection.items = [];
 
@@ -57,14 +59,15 @@ const groupListHandler = (req, res, result) => {
 const groupDetailHandler = (req, res, result) => {
     base = util.getBaseUrl(req)
     let href = util.getUrlByAppendPath(req);
+    let parentUrl = util.getParentUrl(req);
 
     cj.collection = {};
     cj.collection.version = "1.0";
     cj.collection.href = href;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/group' });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + '/group' + '/template' });
+    cj.collection.links.push({ 'rel': 'up', 'href': parentUrl });
+    cj.collection.links.push({ 'rel': 'template', 'href': parentUrl + '/template' });
 
     cj.collection.items = [];
 
@@ -97,12 +100,13 @@ const groupDetailHandler = (req, res, result) => {
 const groupTemplateHandler = (req, res) => {
     base = util.getBaseUrl(req)
     let href = util.getUrlByAppendPath(req);
+    let parentUrl = util.getParentUrl(req);
     cj.collection = {};
     cj.collection.version = "1.0";
     cj.collection.href = href;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/group' });
+    cj.collection.links.push({ 'rel': 'up', 'href': parentUrl });
     
     var template = {};
     var item = {};
