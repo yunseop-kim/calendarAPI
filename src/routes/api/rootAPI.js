@@ -1,5 +1,5 @@
 import express from 'express';
-import * as root from './representation/root';
+import * as root from '../representation/root';
 
 const router = express.Router();
 
