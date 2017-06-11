@@ -1,128 +1,1003 @@
-# Express.js with Babel Boilerplate
+# Calendar API
+## description
+- Database: MySQL
+    - SQL File Path : calendar.sql
 
-[![Code Climate](https://codeclimate.com/github/vmasto/express-babel/badges/gpa.svg)](https://codeclimate.com/github/vmasto/express-babel)
-[![Dependencies Status](https://david-dm.org/vmasto/express-babel/status.svg)](https://david-dm.org/vmasto/express-babel)
-[![Dev Dependencies Status](https://david-dm.org/vmasto/express-babel/dev-status.svg)](https://david-dm.org/vmasto/express-babel)
-[![NSP Status](https://nodesecurity.io/orgs/vmasto/projects/d8089487-4f0e-4f69-abb1-938c6de1e6a7/badge)](https://nodesecurity.io/orgs/vmasto/projects/d8089487-4f0e-4f69-abb1-938c6de1e6a7)
+## API
+**Login Representation**
+----
+  Inquire Login Representation.
 
-A mostly unopinionated starter project for using Babel and ES2017+ features in a Node.js server environment as well as providing linting and testing solutions. It provides the setup for compiling, linting and testing your code but doesn't make any further assumptions on how your project should be structured.
+* **URL**
 
-It's a small improvement over [Babel's official approach](https://github.com/babel/example-node-server) and [express-generator](https://expressjs.com/en/starter/generator.html).
+  /login
 
-Make sure you read the FAQ for more details and info.
+* **Method:**
 
-### Features:
-- [Express.js](https://expressjs.com/) as the web framework.
-- ES2017+ support with [Babel](https://babeljs.io/).
-- Automatic polyfill requires based on environment with [babel-preset-env](https://github.com/babel/babel-preset-env).
-- Linting with [ESLint](http://eslint.org/).
-- Testing with [Jest](https://facebook.github.io/jest/).
-- [Quick deployment guide](DEPLOYMENT.md) for Heroku, AWS Elastic Beanstalk, and App Engine.
+  `GET`
+  
+*  **URL Params**
 
-## Getting started
+  None
 
-```sh
-# Clone the project
-git clone git@github.com:vmasto/express-babel.git
-cd express-babel
+* **Data Params**
 
-# Make it your own
-rm -rf .git && git init && npm init
+  None
 
-# Install dependencies
-npm install
+* **Success Response:**
 
-# or if you're using Yarn
-yarn
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/login",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/login/template"
+                }
+            ]
+        }
+    }
+    ```
+----
+
+**Login Template**
+----
+  Inquire Login Template.
+
+* **URL**
+
+  /login/template
+
+* **Method:**
+
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/login/template",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/login"
+                }
+            ],
+            "template": {
+                "data": [
+                    {
+                        "name": "email",
+                        "value": "",
+                        "prompt": "Email"
+                    },
+                    {
+                        "name": "password",
+                        "value": "",
+                        "prompt": "Password"
+                    }
+                ]
+            }
+        }
+    }
+    ```
+----
+
+**Login**
+----
+  Login to Calendar App.
+
+* **URL**
+
+  /login
+
+* **Method:**
+
+  `POST`
+  
+* **Body**
+
+```
+{
+	"template": {
+      "data": [
+        {
+          "name": "email",
+          "value": "",
+          "prompt": "group name"
+        },
+        {
+          "name": "password",
+          "value": "",
+          "prompt": "show selected"
+        }
+      ]
+    }
+}
 ```
 
-_If you don't use [Yarn](https://yarnpkg.com/) you can just replace `yarn` with `npm` in the commands that follow._
+* **Success Response:**
 
-Then you can begin development:
+  * **Code:** 201 <br />
 
-```sh
-yarn run dev
+----
+
+**Calendar**
+----
+  Inquire Calendar Representation.
+
+* **URL**
+
+  /calendar
+
+* **Method:**
+
+  `GET`
+
+* **Query Params**
+
+  `date`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/calendar/template"
+                },
+                {
+                    "rel": "prev",
+                    "href": "http://localhost:8080/calendar/2017/05"
+                },
+                {
+                    "rel": "current",
+                    "href": "http://localhost:8080/calendar/2017/06"
+                },
+                {
+                    "rel": "next",
+                    "href": "http://localhost:8080/calendar/2017/07"
+                }
+            ],
+            "queries": [
+                {
+                    "rel": "find by date",
+                    "prompt": "find by date",
+                    "href": "http://localhost:8080/calendar",
+                    "data": [
+                        {
+                            "name": "date",
+                            "value": "",
+                            "prompt": "input date. format: YYYY-MM"
+                        }
+                    ]
+                },
+                {
+                    "rel": "find by query",
+                    "prompt": "find by query",
+                    "href": "http://localhost:8080/calendar/find",
+                    "data": [
+                        {
+                            "name": "query",
+                            "value": "",
+                            "prompt": "input query."
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+----
+
+**Find Schedule**
+----
+  Find Schedule
+
+* **URL**
+
+  /calendar/find
+
+* **Method:**
+
+  `GET`
+
+* **Query Params**
+
+  `query`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/find",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/calendar"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/calendar/template"
+                }
+            ],
+            "items": [
+                {
+                    "href": "http://localhost:8080/calendar/2",
+                    "data": [
+                        {
+                            "name": "title",
+                            "value": "schedule 2",
+                            "prompt": "title"
+                        }
+                    ]
+                },
+                {
+                    "href": "http://localhost:8080/calendar/5",
+                    "data": [
+                        {
+                            "name": "title",
+                            "value": "schedule 5",
+                            "prompt": "title"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+----
+
+**Calendar Template**
+----
+  Inquire Calendar Template.
+
+* **URL**
+
+  /calendar/template
+
+* **Method:**
+
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/template",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/calendar"
+                }
+            ],
+            "template": {
+                "data": [
+                    {
+                        "name": "title",
+                        "value": "",
+                        "prompt": "Title"
+                    },
+                    {
+                        "name": "startDate",
+                        "value": "",
+                        "prompt": "Start Date"
+                    },
+                    {
+                        "name": "endDate",
+                        "value": "",
+                        "prompt": "End Date"
+                    },
+                    {
+                        "name": "groupName",
+                        "value": "",
+                        "prompt": "select group name"
+                    }
+                ]
+            }
+        }
+    }
+    ```
+----
+
+**Calendar Detail**
+----
+  Inquire Calendar Detail.
+
+* **URL**
+
+  /calendar/:idx
+
+* **Method:**
+
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/1",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/calendar"
+                }
+            ],
+            "items": [
+                {
+                    "href": "http://localhost:8080/calendar/1",
+                    "data": [
+                        {
+                            "name": "title",
+                            "value": "my title",
+                            "prompt": "title"
+                        },
+                        {
+                            "name": "startDate",
+                            "value": "2017-06-11T20:15:45.000Z",
+                            "prompt": "start date"
+                        },
+                        {
+                            "name": "endDate",
+                            "value": "2017-06-11T20:15:45.000Z",
+                            "prompt": "end date"
+                        },
+                        {
+                            "name": "groupName",
+                            "value": "",
+                            "prompt": "group name"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/166",
+            "error": {
+                "code": "3002",
+                "title": "Server Processing Error",
+                "message": "The resource you want requested is not found"
+            }
+        }
+    }
+    ```
+----
+
+**Inquire Monthly**
+----
+  Inquire Monthly
+
+* **URL**
+
+  /calendar/:year/:month
+
+* **Method:**
+
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/2017/06",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080"
+                },
+                {
+                    "rel": "today",
+                    "href": "http://localhost:8080/calendar/2017/06/12"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/template"
+                }
+            ],
+            "items": [
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/01"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/02"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/03"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/04"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/05"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/06"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/07"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/08"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/09"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/10"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/11"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/12"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/13"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/14"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/15"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/16"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/17"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/18"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/19"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/20"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/21"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/22"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/23"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/24"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/25"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/26"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/27"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/28"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/29"
+                },
+                {
+                    "href": "http://localhost:8080/calendar/2017/06/30"
+                }
+            ]
+        }
+    }
+    ```
+* **Error Response:**
+<!-- todo: validation check of year, month, day-->
+  * **Code:** 400 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/2017/12",
+            "error": {
+                "code": "2001",
+                "title": "Client Input Error",
+                "message": "The resource you want requested is not found"
+            }
+        }
+    }
+    ```
+----
+
+**Inquire Daily**
+----
+  Inquire Daily
+
+* **URL**
+
+  /calendar/:year/:month/:day
+
+* **Method:**
+
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/2017/06/09",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/calendar/2017/06"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/template"
+                }
+            ],
+            "items": [
+                {
+                    "href": "http://localhost:8080/5",
+                    "data": [
+                        {
+                            "name": "title",
+                            "value": "schedule 5",
+                            "prompt": "title"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+* **Error Response:**
+<!-- todo: validation check of year, month, day-->
+  * **Code:** 400 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/calendar/2017/12/11",
+            "error": {
+                "code": "2001",
+                "title": "Client Input Error",
+                "message": "The resource you want requested is not found"
+            }
+        }
+    }
+    ```
+----
+
+**Enroll Schedule**
+----
+  Enroll Schedule.
+
+* **URL**
+
+  /calendar
+
+* **Method:**
+
+  `POST`
+  
+* **Body**
+
+```
+{
+	"template": {
+        "data": [
+            {
+                "name": "title",
+                "value": "",
+                "prompt": "Title"
+            },
+            {
+                "name": "startDate",
+                "value": "",
+                "prompt": "Start Date"
+            },
+            {
+                "name": "endDate",
+                "value": "",
+                "prompt": "End Date"
+            },
+            {
+                "name": "groupName",
+                "value": "",
+                "prompt": "select group name"
+            }
+        ]
+    }
+}
 ```
 
-This will launch a [nodemon](https://nodemon.io/) process for automatic server restarts when your code changes.
+* **Success Response:**
 
-### Testing
+  * **Code:** 201 <br />
 
-Testing is powered by [Jest](https://facebook.github.io/jest/). This project also uses [supertest](https://github.com/visionmedia/supertest) for demonstrating a simple routing smoke test suite. Feel free to remove supertest entirely if you don't wish to use it.
+----
 
-Start the test runner in watch mode with:
 
-```sh
-yarn test
+**Modify Schedule**
+----
+  Modify Schedule.
+
+* **URL**
+
+  /calendar/:idx
+
+* **URL Params**
+
+  idx=[integer]
+
+* **Method:**
+
+  `PUT`
+  
+* **Body**
+
+```
+{
+	"template": {
+        "data": [
+            {
+                "name": "title",
+                "value": "",
+                "prompt": "Title"
+            },
+            {
+                "name": "startDate",
+                "value": "",
+                "prompt": "Start Date"
+            },
+            {
+                "name": "endDate",
+                "value": "",
+                "prompt": "End Date"
+            },
+            {
+                "name": "groupName",
+                "value": "",
+                "prompt": "select group name"
+            }
+        ]
+    }
+}
 ```
 
-You can also generate coverage with:
+* **Success Response:**
 
-```sh
-yarn test -- --coverage
+  * **Code:** 204 <br />
+
+----
+
+**Delete Schedule**
+----
+  Delete Schedule.
+
+* **URL**
+
+  /calendar/:idx
+
+* **URL Params**
+
+  idx=[integer]
+
+* **Method:**
+
+  `DELETE`
+
+* **Success Response:**
+
+  * **Code:** 204 <br />
+
+----
+
+
+**Group**
+----
+  Inquire Group Representation.
+
+* **URL**
+
+  /group
+
+* **Method:**
+
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/group",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/group/template"
+                },
+                {
+                    "rel": "list",
+                    "href": "http://localhost:8080/group/list"
+                }
+            ]
+        }
+    }
+    ```
+----
+
+**Enroll Group**
+----
+  Enroll Group.
+
+* **URL**
+
+  /group
+
+* **Method:**
+
+  `POST`
+  
+* **Body**
+
+```
+{
+	"template": {
+      "data": [
+        {
+          "name": "name",
+          "value": "owww",
+          "prompt": "group name"
+        },
+        {
+          "name": "selected",
+          "value": true,
+          "prompt": "show selected"
+        }
+      ]
+    }
+}
 ```
 
-(the extra double hyphen `--` is necessary).
+* **Success Response:**
 
-### Linting
+  * **Code:** 201 <br />
 
-Linting is set up using [ESLint](http://eslint.org/). It uses ESLint's default [eslint:recommended](https://github.com/eslint/eslint/blob/master/conf/eslint.json) rules. Feel free to use your own rules and/or extend another popular linting config (e.g. [airbnb's](https://www.npmjs.com/package/eslint-config-airbnb) or [standard](https://github.com/feross/eslint-config-standard)).
+----
 
-Begin linting in watch mode with:
+**Modify Group**
+----
+  Modify Group.
 
-```sh
-yarn run lint
+* **URL**
+
+  /group/:idx
+
+* **URL Params**
+
+  idx=[integer]
+
+* **Method:**
+
+  `PUT`
+  
+* **Body**
+
+```
+{
+	"template": {
+      "data": [
+        {
+          "name": "name",
+          "value": "owww",
+          "prompt": "group name"
+        },
+        {
+          "name": "selected",
+          "value": true,
+          "prompt": "show selected"
+        }
+      ]
+    }
+}
 ```
 
-### Environmental variables in development
+* **Success Response:**
 
-The project uses [dotenv](https://www.npmjs.com/package/dotenv) for setting environmental variables during development. Simply copy `.env.example`, rename it to `.env` and add your env vars as you see fit. 
+  * **Code:** 204 <br />
 
-It is **strongly** recommended **never** to check in your .env file to version control. It should only include environment-specific values such as database passwords or API keys used in development. Your production env variables should be different and be set differently depending on your hosting solution. `dotenv` is only for development.
+----
 
-### Deployment
+**Delete Group**
+----
+  Delete Group.
 
-Deployment is specific to hosting platform/provider but generally:
+* **URL**
 
-```sh
-yarn run build
-```
+  /group/:idx
 
-will compile your src into `/dist`, and 
+* **URL Params**
 
-```sh
-yarn start
-```
+  idx=[integer]
 
-will run `build` (via the `prestart` hook) and start the compiled application from the `/dist` folder.
+* **Method:**
 
-The last command is generally what most hosting providers use to start your application when deployed, so it should take care of everything.
+  `DELETE`
 
-You can find small guides for Heroku, App Engine and AWS in [the deployment](DEPLOYMENT.md) document.
+* **Success Response:**
 
-## FAQ
+  * **Code:** 204 <br />
 
-**Where is all the configuration for ESLint, Jest and Babel?**
+----
 
-In `package.json`. Feel free to extract them in separate respective config files if you like.
+**Group Template**
+----
+  Inquire Group Template.
 
-**Why are you using `babel-register` instead of `babel-node`?**
+* **URL**
 
-`babel-node` contains a small "trap", it loads Babel's [polyfill](https://babeljs.io/docs/usage/polyfill/) by default. This means that if you use something that needs to be polyfilled, it'll work just fine in development (because `babel-node` polyfills it automatically) but it'll break in production because it needs to be explicitely included in Babel's CLI which handles the final build.
+  /group/template
 
-In order to avoid such confusions, `babel-register` is a more sensible approach in keeping the development and production runtimes equal. By using [babel-preset-env](https://github.com/babel/babel-preset-env) only code that's not supported by the running environment is transpiled and any polyfills required are automatically inserted.
+* **Method:**
 
-**Should I use this?**
+  `GET`
+  
+* **Success Response:**
 
-Full disclosure: If you have to ask perhaps you should reconsider. There is some debate on whether to use Babel-transpiled code on the server or not. Personally, I think it's fine and I've found this setup to be a sensible approach in doing so. That said, I'd suggest to take anything you read online with a grain of salt and refrain from blindly using boilerplates without first investigating personally.
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/group/template",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/group"
+                }
+            ],
+            "template": {
+                "data": [
+                    {
+                        "name": "name",
+                        "value": "",
+                        "prompt": "group name"
+                    },
+                    {
+                        "name": "selected",
+                        "value": true,
+                        "prompt": "show selected"
+                    }
+                ]
+            }
+        }
+    }
+    ```
 
-Node is very rapidly converging with the latest ECMAScript specification, and there's mostly full native support for ES2015 and ES2016. The need to transpile on the server is way smaller nowadays, albeit the language is constantly improving and transpiling will probably always be a part of our workflow. At the time of this writing the main benefits are mainly ES6 module syntax and async/await without flags.
+**Group List**
+----
+  Inquire Group List.
 
-In any case, you can simply remove transpilation and keep everything else that this kit has to offer.
+* **URL**
 
-If you see anything that needs improvement feel free to open an issue for discussion!
+  /group/list
 
-You can also find me on twitter at [@vmasto](https://twitter.com/vmasto).
+* **Method:**
 
-## License
-MIT License. See the [LICENSE](LICENSE) file.
+  `GET`
+  
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content**
+    ```
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://localhost:8080/group/list",
+            "links": [
+                {
+                    "rel": "up",
+                    "href": "http://localhost:8080/group"
+                },
+                {
+                    "rel": "template",
+                    "href": "http://localhost:8080/group/template"
+                }
+            ],
+            "items": [
+                {
+                    "href": "http://localhost:8080/group/8",
+                    "data": [
+                        {
+                            "name": "name",
+                            "value": "ttteeesssttt",
+                            "prompt": "group name"
+                        }
+                    ]
+                },
+                {
+                    "href": "http://localhost:8080/group/6",
+                    "data": [
+                        {
+                            "name": "name",
+                            "value": "group3",
+                            "prompt": "group name"
+                        }
+                    ]
+                },
+                {
+                    "href": "http://localhost:8080/group/5",
+                    "data": [
+                        {
+                            "name": "name",
+                            "value": "group2",
+                            "prompt": "group name"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+----

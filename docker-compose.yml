@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+    calendar-api:
+        build: .
+        ports:
+            - 8080:8080
+        links:
+            - calendar-api-db
+        depends_on:
+            - calendar-api-db
+        environment:
+            - DB_HOST=calendar-api-db
+            - DB_PORT=3306
+            - DB_USER=root
+            - DB_PASSWORD=mypass1234
+            - DB_DATABASE=calendar
+        restart: always
+
+    calendar-api-db:
+        build: ./docker/db
+        environment:
+            - MYSQL_ROOT_PASSWORD=mypass1234
+            - MYSQL_DATABASE=calendar
+        restart: always

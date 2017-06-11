@@ -9,17 +9,17 @@ import * as util from '../util/requestUrlUtil';
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  calendar.calendarHandler(req, res);
-});
-
-router.get('/schedule', (req, res, next) => {
   let date = req.query.date;
 
   calendar.calendarScheduleHandler(req, res, date);
 });
 
+router.get('/template', (req, res, next) => {
+  calendar.calendarTemplateHandler(req, res);
+})
+
 // It is unclear whether it represents only the selected group.
-router.get('/schedule/find', (req, res, next) => {
+router.get('/find', (req, res, next) => {
   let search = req.query.query;
   let token = req.get('Access-Token');
 
@@ -30,7 +30,7 @@ router.get('/schedule/find', (req, res, next) => {
   });
 });
 
-router.get('/schedule/:idx', (req, res, next) => {
+router.get('/:idx', (req, res, next) => {
   let idx = req.params.idx;
   let token = req.get('Access-Token');
 
@@ -41,7 +41,7 @@ router.get('/schedule/:idx', (req, res, next) => {
   });
 });
 
-router.put('/schedule/:idx', (req, res, next) => {
+router.put('/:idx', (req, res, next) => {
   let calendarTemplate = calendar.createCalendarFromTemplate(req.body);
   let idx = req.params.idx;
   let token = req.get('Access-Token');
@@ -56,7 +56,7 @@ router.put('/schedule/:idx', (req, res, next) => {
     });
 });
 
-router.delete('/schedule/:idx', (req, res, next) => {
+router.delete('/:idx', (req, res, next) => {
   let idx = req.params.idx;
   let token = req.get('Access-Token');
 
@@ -68,16 +68,18 @@ router.delete('/schedule/:idx', (req, res, next) => {
     });
 });
 
-router.get('/:year/:month/schedule', (req, res, next) => {
+router.get('/:year/:month', (req, res, next) => {
+  console.log('/:year/:month');
   let token = req.get('Access-Token');
   let { year, month } = req.params;
 
   calendar.monthlyCalendarHandler(req, res, year, month);
 });
 
-router.get('/:year/:month/:day/schedule', (req, res, next) => {
+router.get('/:year/:month/:day', (req, res, next) => {
   let { year, month, day } = req.params;
-  let date = year + month + day;
+  console.log(`${year}, ${month}, ${day}`);
+  let date = year + '-' + month + '-' + day;
   let token = req.get('Access-Token');
 
   dao.daily(date, token).then(result => {
@@ -87,7 +89,7 @@ router.get('/:year/:month/:day/schedule', (req, res, next) => {
   });
 });
 
-router.post('/schedule', (req, res, next) => {
+router.post('/', (req, res, next) => {
   let calendarTemplate = calendar.createCalendarFromTemplate(req.body);
   let token = req.get('Access-Token');
   dao.create(calendarTemplate, token).then(value => {
@@ -96,9 +98,5 @@ router.post('/schedule', (req, res, next) => {
     error.errorHandler(req, res, err);
   });
 });
-
-router.get('/template', (req, res, next) => {
-  calendar.calendarTemplateHandler(req, res);
-})
 
 module.exports = router;

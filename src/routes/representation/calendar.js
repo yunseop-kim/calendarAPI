@@ -6,25 +6,8 @@ let path = '';
 let base = '';
 const cType = 'application/json'
 let cj = {};
-var friends = [];
 
-const calendarHandler = (req, res) => {
-    base = util.getBaseUrl(req)
-    let href = util.getUrlByAppendPath(req);
-
-    cj.collection = {};
-    cj.collection.version = "1.0";
-    cj.collection.href = href;
-
-    cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base });
-    cj.collection.links.push({ 'rel': 'schedule', 'href': href + '/schedule' });
-    cj.collection.links.push({ 'rel': 'template', 'href': href + '/template' });
-
-    res.status(200).set(headerSet).send(JSON.stringify(cj));
-}
-
-const calendarScheduleHandler = (req, res, date) => {
+const calendarHandler = (req, res, date) => {
     base = util.getBaseUrl(req)
     let href = util.getUrlByAppendPath(req);
     let parentUrl = util.getParentUrl(req);
@@ -35,9 +18,10 @@ const calendarScheduleHandler = (req, res, date) => {
 
     cj.collection.links = [];
     cj.collection.links.push({ 'rel': 'up', 'href': parentUrl });
-    cj.collection.links.push({ 'rel': 'prev', 'href': util.getMonthlyCalendarUrl(base, date, 'prev') + '/schedule' });
-    cj.collection.links.push({ 'rel': 'current', 'href': util.getMonthlyCalendarUrl(base, date) + '/schedule' });
-    cj.collection.links.push({ 'rel': 'next', 'href': util.getMonthlyCalendarUrl(base, date, 'next') + '/schedule' });
+    cj.collection.links.push({ 'rel': 'template', 'href': href + '/template' });
+    cj.collection.links.push({ 'rel': 'prev', 'href': util.getMonthlyCalendarUrl(base, date, 'prev') });
+    cj.collection.links.push({ 'rel': 'current', 'href': util.getMonthlyCalendarUrl(base, date) });
+    cj.collection.links.push({ 'rel': 'next', 'href': util.getMonthlyCalendarUrl(base, date, 'next') });
 
     cj.collection.queries = [];
 
@@ -125,8 +109,8 @@ const monthlyCalendarHandler = (req, res, year, month) => {
     cj.collection.href = href;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': parentUrl + "/schedule" });
-    cj.collection.links.push({ 'rel': 'today', 'href': util.getDailyCalendarUrl(base) + '/schedule' });
+    cj.collection.links.push({ 'rel': 'up', 'href': parentUrl });
+    cj.collection.links.push({ 'rel': 'today', 'href': util.getDailyCalendarUrl(base) });
     cj.collection.links.push({ 'rel': 'template', 'href': parentUrl + '/template' });
 
     cj.collection.items = [];
@@ -137,7 +121,7 @@ const monthlyCalendarHandler = (req, res, year, month) => {
         }
 
         cj.collection.items.push({
-            href: base + '/calendar' + '/' + year + '/' + month + '/' + i + '/schedule'
+            href: base + '/calendar' + '/' + year + '/' + month + '/' + i
         });
     }
 
@@ -158,7 +142,7 @@ const dailyCalendarHandler = (req, res, result) => {
     cj.collection.href = href;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': util.getMonthlyCalendarUrl(base, date) + '/schedule' });
+    cj.collection.links.push({ 'rel': 'up', 'href': util.getMonthlyCalendarUrl(base, date) });
     cj.collection.links.push({ 'rel': 'template', 'href': parentUrl + '/template' });
 
     cj.collection.items = [];
@@ -166,7 +150,7 @@ const dailyCalendarHandler = (req, res, result) => {
 
     result.map(element => {
         cj.collection.items.push({
-            href: parentUrl + '/schedule' + '/' + element.idx,
+            href: parentUrl + '/' + element.idx,
             data: [
                 {
                     name: "title",
@@ -272,7 +256,6 @@ const createCalendarFromTemplate = (template) => {
 
 export {
     calendarHandler,
-    calendarScheduleHandler,
     calendarTemplateHandler,
     monthlyCalendarHandler,
     dailyCalendarHandler,
