@@ -14,6 +14,7 @@ function query(sql, values) {
     return new Promise((resolve, reject) => {
         pool.getConnection((err, connection) => {
             if (err) {
+                console.log('model > util > query > err --->', err.message);
                 connection.release();
                 reject(err.message);
             }
@@ -96,4 +97,14 @@ function commit(connection) {
     });
 }
 
-export { query, transaction, transactionQuery, commit }
+function rollback(connection, message){
+    console.log('model > util > rollback > start --->');
+    return new Promise((resolve, reject)=>{
+        connection.rollback(()=>{
+            connection.release();
+        });
+        reject(message);
+    });
+}
+
+export { query, transaction, transactionQuery, commit, rollback }

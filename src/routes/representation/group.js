@@ -17,6 +17,26 @@ const groupHandler = (req, res) => {
     res.status(200).set(headerSet).send(JSON.stringify(cj));
 }
 
+const groupListHandler = (req, res, result) => {
+    base = 'http://' + req.headers.host;
+    path = req.originalUrl
+
+    createGroupListRepresentation(result);
+    // renderQueries();
+
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
+}
+
+const groupDetailHandler = (req, res, result) => {
+    base = 'http://' + req.headers.host;
+    path = req.originalUrl
+
+    createGroupDetailRepresentation(result);
+    // renderQueries();
+
+    res.status(200).set(headerSet).send(JSON.stringify(cj));
+}
+
 const groupTemplateHandler = (req, res) => {
     base = 'http://' + req.headers.host;
     path = req.originalUrl;
@@ -44,21 +64,15 @@ function renderTemplate() {
     template.data = [];
 
     item = {};
-    item.name = 'title';
+    item.name = 'name';
     item.value = '';
-    item.prompt = 'Title';
+    item.prompt = 'group name';
     template.data.push(item);
 
     item = {};
-    item.name = 'start_date';
-    item.value = '';
-    item.prompt = 'Start Date';
-    template.data.push(item);
-
-    item = {};
-    item.name = 'end_date';
-    item.value = '';
-    item.prompt = 'End Date';
+    item.name = 'selected';
+    item.value = true;
+    item.prompt = 'show selected';
     template.data.push(item);
 
     cj.collection.template = template;
@@ -82,7 +96,7 @@ const monthlyGroupHandler = (req, res, year, month) => {
     cj.collection.items = [];
 
     for (let i = 1; i <= lastDay; i++) {
-        if ( i < 10){
+        if (i < 10) {
             i = '0' + i;
         }
 
@@ -104,7 +118,7 @@ const dailyGroupHandler = (req, res, result) => {
     cj.collection.href = base + path;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/' + year +'/' + month + '/schedule' });
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/' + year + '/' + month + '/schedule' });
     cj.collection.links.push({ 'rel': 'template', 'href': base + '/group/template' });
     // cj.collection.links.push({ 'rel': 'prev', 'href': base + '/' + year +'/' + month + '/schedule' });
     // cj.collection.links.push({ 'rel': 'next', 'href': base + '/' + year +'/' + month + '/schedule' });
@@ -115,50 +129,6 @@ const dailyGroupHandler = (req, res, result) => {
     result.map(element => {
         cj.collection.items.push({
             href: base + path + '/' + element.idx,
-            data: [
-                {
-                    name: "title",
-                    value: element.title,
-                    prompt: "title"
-                },
-                {
-                    name: "startDate",
-                    value: element.start_date,
-                    prompt: "start date"
-                },
-                {
-                    name: "endDate",
-                    value: element.end_date,
-                    prompt: "end date"
-                }
-            ]
-        });
-    });
-
-    res.status(200).set(headerSet).send(JSON.stringify(cj));
-}
-
-const groupDetailHandler = (req, res, result) => {
-    let { year, month, day, idx } = req.params;
-    base = 'http://' + req.headers.host;
-    path = req.originalUrl
-
-    cj.collection = {};
-    cj.collection.version = "1.0";
-    cj.collection.href = base + path;
-
-    cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + '/group/template' });
-    // cj.collection.links.push({ 'rel': 'prev', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
-    // cj.collection.links.push({ 'rel': 'next', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
-
-    cj.collection.items = [];
-
-
-    result.map(element => {
-        cj.collection.items.push({
-            href: base + path,
             data: [
                 {
                     name: "title",
@@ -207,10 +177,71 @@ const createGroupRepresentation = () => {
 
     cj.collection.links = [];
     cj.collection.links.push({ 'rel': 'up', 'href': base });
-    cj.collection.links.push({ 'rel': 'schedule', 'href': base + path + '/schedule' });
     cj.collection.links.push({ 'rel': 'template', 'href': base + path + '/template' });
+    cj.collection.links.push({ 'rel': 'list', 'href': base + path + '/list' });
 
     // cj.collection.queries = [];
+}
+
+const createGroupListRepresentation = (result) => {
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = base + path;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/group' });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + '/template' });
+
+    cj.collection.items = [];
+
+    result.map((element) => {
+        cj.collection.items.push({
+            href: base + '/group' + '/' + element.idx,
+            data: [
+                {
+                    "name": "name",
+                    "value": element.name,
+                    "prompt": "group name"
+                }
+            ]
+        });
+    })
+
+}
+
+const createGroupDetailRepresentation = (result) => {
+    cj.collection = {};
+    cj.collection.version = "1.0";
+    cj.collection.href = base + path;
+
+    cj.collection.links = [];
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/group' });
+    cj.collection.links.push({ 'rel': 'template', 'href': base + '/group' + '/template' });
+
+    cj.collection.items = [];
+
+    result.map((element) => {
+        cj.collection.items.push({
+            href: base + '/group' + '/' + element.idx,
+            data: [
+                {
+                    "name": "name",
+                    "value": element.name,
+                    "prompt": "group name"
+                },
+                {
+                    "name": "created",
+                    "value": element.created,
+                    "prompt": "created date"
+                },
+                {
+                    "name": "selected",
+                    "value": element.selected ? true : false,
+                    "prompt": "show selected"
+                }
+            ]
+        });
+    });
 }
 
 const createGroupFromTemplate = (template) => {
@@ -226,9 +257,10 @@ const createGroupFromTemplate = (template) => {
 
 export {
     groupHandler,
+    groupListHandler,
+    groupDetailHandler,
     groupTemplateHandler,
     monthlyGroupHandler,
     dailyGroupHandler,
-    groupDetailHandler,
     createGroupFromTemplate
 };

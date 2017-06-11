@@ -11,37 +11,14 @@ router.get('/', (req, res, next) => {
   calendar.calendarHandler(req, res);
 });
 
-router.get('/:year/:month/schedule', (req, res, next) => {
-  let token = req.get('Access-Token');
-  let { year, month } = req.params;
-
-  calendar.monthlyCalendarHandler(req, res, year, month);
-});
-
-router.get('/:year/:month/:day/schedule', (req, res, next) => {
-  let { year, month, day } = req.params;
-  let date = year + month + day;
-  let token = req.get('Access-Token');
-
-  dao.daily(date, token).then(result => {
-    calendar.dailyCalendarHandler(req, res, result);
-  }).catch(err => {
-    errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
-  });
-});
-
-router.get('/:year/:month/:day/schedule/:idx', (req, res, next) => {
+router.get('/schedule/:idx', (req, res, next) => {
   let idx = req.params.idx;
   let token = req.get('Access-Token');
 
   dao.detail(idx, token).then(result => {
     calendar.calendarDetailHandler(req, res, result);
   }).catch(err => {
-    errorHandler(req, res, {
+    error.errorHandler(req, res, {
       code: '1000',
       title: 'Error Ocurred',
       message: err
@@ -49,7 +26,7 @@ router.get('/:year/:month/:day/schedule/:idx', (req, res, next) => {
   });
 });
 
-router.put('/:year/:month/:day/schedule/:idx', (req, res, next) => {
+router.put('/schedule/:idx', (req, res, next) => {
   let calendarTemplate = calendar.createCalendarFromTemplate(req.body);
   let idx = req.params.idx;
   let token = req.get('Access-Token');
@@ -68,7 +45,7 @@ router.put('/:year/:month/:day/schedule/:idx', (req, res, next) => {
     });
 });
 
-router.delete('/:year/:month/:day/schedule/:idx', (req, res, next) => {
+router.delete('/schedule/:idx', (req, res, next) => {
   let idx = req.params.idx;
   let token = req.get('Access-Token');
 
@@ -84,11 +61,34 @@ router.delete('/:year/:month/:day/schedule/:idx', (req, res, next) => {
     });
 });
 
+router.get('/:year/:month/schedule', (req, res, next) => {
+  let token = req.get('Access-Token');
+  let { year, month } = req.params;
+
+  calendar.monthlyCalendarHandler(req, res, year, month);
+});
+
+router.get('/:year/:month/:day/schedule', (req, res, next) => {
+  let { year, month, day } = req.params;
+  let date = year + month + day;
+  let token = req.get('Access-Token');
+
+  dao.daily(date, token).then(result => {
+    calendar.dailyCalendarHandler(req, res, result);
+  }).catch(err => {
+    error.errorHandler(req, res, {
+      code: '1000',
+      title: 'Error Ocurred',
+      message: err
+    });
+  });
+});
+
 router.post('/schedule', (req, res, next) => {
   let calendarTemplate = calendar.createCalendarFromTemplate(req.body);
   let token = req.get('Access-Token');
   dao.create(calendarTemplate, token).then(value => {
-    res.status(200).set(headerSet).end();
+    res.status(201).set(headerSet).end();
   }).catch(err => {
     error.errorHandler(req, res, {
       code: '1000',

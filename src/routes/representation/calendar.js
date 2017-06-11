@@ -50,15 +50,21 @@ function renderTemplate() {
     template.data.push(item);
 
     item = {};
-    item.name = 'start_date';
+    item.name = 'startDate';
     item.value = '';
     item.prompt = 'Start Date';
     template.data.push(item);
 
     item = {};
-    item.name = 'end_date';
+    item.name = 'endDate';
     item.value = '';
     item.prompt = 'End Date';
+    template.data.push(item);
+
+    item = {};
+    item.name = 'groupName';
+    item.value = '';
+    item.prompt = 'select group name';
     template.data.push(item);
 
     cj.collection.template = template;
@@ -114,22 +120,12 @@ const dailyCalendarHandler = (req, res, result) => {
 
     result.map(element => {
         cj.collection.items.push({
-            href: base + path + '/' + element.idx,
+            href: base + '/schedule' + '/' + element.idx,
             data: [
                 {
                     name: "title",
                     value: element.title,
                     prompt: "title"
-                },
-                {
-                    name: "startDate",
-                    value: element.start_date,
-                    prompt: "start date"
-                },
-                {
-                    name: "endDate",
-                    value: element.end_date,
-                    prompt: "end date"
                 }
             ]
         });
@@ -148,8 +144,7 @@ const calendarDetailHandler = (req, res, result) => {
     cj.collection.href = base + path;
 
     cj.collection.links = [];
-    cj.collection.links.push({ 'rel': 'up', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
-    cj.collection.links.push({ 'rel': 'template', 'href': base + '/calendar/template' });
+    cj.collection.links.push({ 'rel': 'up', 'href': base + '/calendar' });
     // cj.collection.links.push({ 'rel': 'prev', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
     // cj.collection.links.push({ 'rel': 'next', 'href': base + '/' + year +'/' + month + '/' + day + '/schedule' });
 
@@ -174,6 +169,11 @@ const calendarDetailHandler = (req, res, result) => {
                     name: "endDate",
                     value: element.end_date,
                     prompt: "end date"
+                },
+                {
+                    name: "groupName",
+                    value: '',
+                    prompt: "group name"
                 }
             ]
         });

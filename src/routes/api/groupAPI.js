@@ -17,7 +17,7 @@ router.post('/', (req, res, next) => {
 
   dao.create(template, token)
     .then(result => {
-      res.status(200).set(headerSet).end();
+      res.status(201).set(headerSet).end();
     }, err => {
       error.errorHandler(req, res, {
         code: '1000',
@@ -25,14 +25,72 @@ router.post('/', (req, res, next) => {
         message: err
       });
     });
-})
+});
 
-// router.get('/:year/:month/schedule', (req, res, next) => {
-//   let token = req.get('Access-Token');
-//   let { year, month } = req.params;
+router.get('/list', (req, res, next) => {
+  let token = req.get('Access-Token');
 
-//   group.monthlyGroupHandler(req, res, year, month);
-// });
+  dao.list().then(result => {
+    group.groupListHandler(req, res, result);
+  }).catch(err => {
+    error.errorHandler(req, res, {
+      code: '1000',
+      title: 'Error Ocurred',
+      message: err
+    });
+  });
+});
+
+router.get('/template', (req, res, next) => {
+  group.groupTemplateHandler(req, res);
+});
+
+router.get('/:idx', (req, res, next) => {
+  let idx = req.params.idx;
+  let token = req.get('Access-Token');
+
+  dao.detail(idx, token).then(result => {
+    group.groupDetailHandler(req, res, result);
+  }).catch(err => {
+    error.errorHandler(req, res, {
+      code: '1000',
+      title: 'Error Ocurred',
+      message: err
+    });
+  });
+});
+
+router.put('/:idx', (req, res, next) => {
+  let idx = req.params.idx;
+  let template = group.createGroupFromTemplate(req.body);
+  let token = req.get('Access-Token');
+  // todo: 수정 시 created도 바뀜.
+  dao.modify(idx, template, token).then(result => {
+    res.status(204).set(headerSet).end();
+  }).catch(err => {
+    error.errorHandler(req, res, {
+      code: '1000',
+      title: 'Error Ocurred',
+      message: err
+    });
+  });
+});
+
+router.delete('/:idx', (req, res, next) => {
+  let idx = req.params.idx;
+  let token = req.get('Access-Token');
+
+  dao.remove(idx, token)
+    .then(result => {
+      res.status(204).set(headerSet).end();
+    }).catch(err => {
+      error.errorHandler(req, res, {
+        code: '1000',
+        title: 'Error Ocurred',
+        message: err
+      });
+    });
+});
 
 // router.get('/:year/:month/:day/schedule', (req, res, next) => {
 //   let { year, month, day } = req.params;
@@ -75,22 +133,6 @@ router.post('/', (req, res, next) => {
 //   dao.modify(idx, groupTemplate, token)
 //     .then(result => {
 //       res.status(200).set(headerSet).end();
-//     }).catch(err => {
-//       error.errorHandler(req, res, {
-//         code: '1000',
-//         title: 'Error Ocurred',
-//         message: err
-//       });
-//     });
-// });
-
-// router.delete('/:year/:month/:day/schedule/:idx', (req, res, next) => {
-//   let idx = req.params.idx;
-//   let token = req.get('Access-Token');
-
-//   dao.remove(idx, token)
-//     .then(result => {
-//       res.status(204).set(headerSet).end();
 //     }).catch(err => {
 //       error.errorHandler(req, res, {
 //         code: '1000',
