@@ -1,6 +1,7 @@
 import * as db from '../util/db';
 import co from 'co';
-// 03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4
+import { ERROR } from '../../routes/util/error';
+
 function create(template, token) {
     let { name, selected } = template;
     return co(function* () {
@@ -60,7 +61,7 @@ function modify(idx, template, token) {
         
         let updateResult = yield db.transactionQuery(connection, sql, values);
         if (!(updateResult.affectedRows > 0)) {
-            yield db.rollback(connection, "Cannot modify this group information.");
+            yield db.rollback(connection, ERROR.INVALID_INPUT);
         }
 
         sql = `
@@ -76,7 +77,7 @@ function modify(idx, template, token) {
         updateResult = yield db.transactionQuery(connection, sql, values);
 
         if (!(updateResult.affectedRows > 0)) {
-            yield db.rollback(connection, "Cannot modify this group information.");
+            yield db.rollback(connection, ERROR.INVALID_INPUT);
         }
         yield db.commit(connection);
 
@@ -100,7 +101,7 @@ function remove(idx, token) {
         let deleteResult = yield db.transactionQuery(connection, sql, values);
         
         if (!(deleteResult.affectedRows > 0)) {
-            yield db.rollback(connection, 'Cannot delete this contents.');
+            yield db.rollback(connection, ERROR.INVALID_INPUT);
         }
 
         yield db.commit(connection);

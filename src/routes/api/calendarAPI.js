@@ -3,6 +3,7 @@ import * as calendar from '../representation/calendar';
 import * as error from '../representation/error';
 import * as dao from '../../model/dao/calendarDAO';
 import { headerSet } from '../util/httpHeaders';
+import { STATUS } from '../util/httpStatusCode';
 import * as util from '../util/requestUrlUtil';
 
 const router = express.Router();
@@ -25,11 +26,7 @@ router.get('/schedule/find', (req, res, next) => {
   dao.find(search, token).then(result => {
     calendar.findCalendarHandler(req, res, result);
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 
@@ -40,11 +37,7 @@ router.get('/schedule/:idx', (req, res, next) => {
   dao.detail(idx, token).then(result => {
     calendar.calendarDetailHandler(req, res, result);
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 
@@ -57,13 +50,9 @@ router.put('/schedule/:idx', (req, res, next) => {
   // todo: make getAccessToken Util
   dao.modify(idx, calendarTemplate, token)
     .then(result => {
-      res.status(204).set(headerSet).end();
+      res.status(STATUS.NO_CONTENT).set(headerSet).end();
     }).catch(err => {
-      error.errorHandler(req, res, {
-        code: '1000',
-        title: 'Error Ocurred',
-        message: err
-      });
+      error.errorHandler(req, res,err);
     });
 });
 
@@ -73,13 +62,9 @@ router.delete('/schedule/:idx', (req, res, next) => {
 
   dao.remove(idx, token)
     .then(result => {
-      res.status(204).set(headerSet).end();
+      res.status(STATUS.NO_CONTENT).set(headerSet).end();
     }).catch(err => {
-      error.errorHandler(req, res, {
-        code: '1000',
-        title: 'Error Ocurred',
-        message: err
-      });
+      error.errorHandler(req, res, err);
     });
 });
 
@@ -98,11 +83,7 @@ router.get('/:year/:month/:day/schedule', (req, res, next) => {
   dao.daily(date, token).then(result => {
     calendar.dailyCalendarHandler(req, res, result);
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 
@@ -110,13 +91,9 @@ router.post('/schedule', (req, res, next) => {
   let calendarTemplate = calendar.createCalendarFromTemplate(req.body);
   let token = req.get('Access-Token');
   dao.create(calendarTemplate, token).then(value => {
-    res.status(201).set(headerSet).end();
+    res.status(STATUS.CREATED).set(headerSet).end();
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 

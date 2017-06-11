@@ -2,6 +2,7 @@ import express from 'express';
 import * as login from '../representation/login';
 import { errorHandler } from '../representation/error';
 import * as dao from '../../model/dao/loginDAO';
+import { STATUS } from '../util/httpStatusCode';
 
 const router = express.Router();
 
@@ -25,14 +26,10 @@ router.post('/', (req, res, next) => {
         .then((result) => {
             let token = result[0].token;
             res.set('Access-Token', token);
-            res.status(201).end();
+            res.status(STATUS.CREATED).end();
         })
         .catch((err) => {
-            errorHandler(req, res, {
-                code: '1000',
-                title: 'Error Ocurred',
-                message: err
-            })
+            errorHandler(req, res, err)
         });
 });
 

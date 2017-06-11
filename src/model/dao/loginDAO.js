@@ -1,6 +1,7 @@
 import * as db from '../util/db';
 import * as crypto from 'crypto';
 import co from 'co';
+import { ERROR } from '../../routes/util/error';
 
 const HEX = 'HEX';
 const SHA256 = 'sha256';
@@ -26,13 +27,13 @@ function create(email, password) {
 function checkPassword(userInfo, password) {
     return new Promise((resolve, reject) => {
         if (userInfo.length < 1) {
-            reject('User not found.');
+            reject(ERROR.RESOURCE_NOT_FOUND);
         }
 
         let admin = userInfo[0];
         let hash = generateHash(password);
         if (hash != admin.password) {
-            reject('Invalid parameter.');
+            reject(ERROR.INVALID_INPUT);
         }
 
         resolve(true);

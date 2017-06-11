@@ -1,4 +1,5 @@
 import * as mysql from 'mysql';
+import { ERROR, mySqlError } from '../../routes/util/error';
 
 // Initialize pool
 // todo : check mysql is running
@@ -16,13 +17,13 @@ function query(sql, values) {
             if (err) {
                 console.log('model > util > query > err --->', err.message);
                 connection.release();
-                reject(err.message);
+                reject(mySqlError(err.message));
             }
 
             connection.query(sql, values, (err, results, fields) => {
                 if (err) {
                     console.log('model > util > query > err --->', err.message);
-                    reject(err.message);
+                    reject(mySqlError(err.message));
                 }
                 connection.release();
                 resolve(results);
@@ -38,7 +39,7 @@ function transaction() {
             if (err) {
                 console.log('model > util > transaction > err:', err.message);
                 connection.release();
-                reject(err.message);
+                reject(mySqlError(err.message));
             }
 
             connection.beginTransaction((err) => {
@@ -48,7 +49,7 @@ function transaction() {
                         console.log('model > util > transaction > rollback!');
                         connection.release();
                     });
-                    reject(err.message);
+                    reject(mySqlError(err.message));
                 }
 
                 console.log('model > util > transaction > resolve!');
@@ -68,7 +69,7 @@ function transactionQuery(connection, query, values) {
                     console.log('model > util > transactionQuery > rollback!');
                     connection.release();
                 });
-                reject(err.message);
+                reject(mySqlError(err.message));
             }
 
             console.log('model > util > transactionQuery > resolve!');
@@ -87,7 +88,7 @@ function commit(connection) {
                 connection.rollback(() => {
                     connection.release();
                 });
-                reject(err.message);
+                reject(mySqlError(err.message));
             }
 
             console.log('model > util > commit > success --->');
@@ -97,10 +98,10 @@ function commit(connection) {
     });
 }
 
-function rollback(connection, message){
+function rollback(connection, message) {
     console.log('model > util > rollback > start --->');
-    return new Promise((resolve, reject)=>{
-        connection.rollback(()=>{
+    return new Promise((resolve, reject) => {
+        connection.rollback(() => {
             connection.release();
         });
         reject(message);

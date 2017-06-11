@@ -1,5 +1,6 @@
 import * as db from '../util/db';
 import co from 'co';
+import { ERROR } from '../../routes/util/error';
 
 function create(template, token) {
     return co(function* () {
@@ -12,7 +13,7 @@ function create(template, token) {
         let result = yield db.query('insert into schedules (title, start_date, end_date, users_idx, groups_idx) VALUES (?, ?, ?, ?, ?)', [title, startDate, endDate, userIdx, groupIdx]);
         
         if(!(result.affectedRows > 0 )){
-            yield Promise.reject('Cannot Create schedule!');
+            yield Promise.reject(ERROR.CAN_NOT_CREATE_RESOURCE);
         }
 
         return result;
@@ -57,7 +58,7 @@ function detail(idx, token) {
         let result = yield db.query(sql, values);
 
         if(!(result.length > 0)){
-            yield Promise.reject('Not found');
+            yield Promise.reject(ERROR.RESOURCE_NOT_FOUND);
         }
 
         return result;
@@ -81,7 +82,6 @@ function find(search, token) {
     });
 }
 
-// todo: groupName update
 function modify(idx, template, token) {
     let { title, start_date, end_date } = template;
 
@@ -98,7 +98,7 @@ function modify(idx, template, token) {
         let result = yield db.query(sql, values);
 
         if (!(result.affectedRows > 0)) {
-            yield Promise.reject('Cannot modify this contents.');
+            yield Promise.reject(ERROR.INVALID_INPUT);
         }
 
         return result;
@@ -118,7 +118,7 @@ function remove(idx, token) {
         let result = yield db.query(sql, values);
 
         if (!(result.affectedRows > 0)) {
-            yield Promise.reject('Cannot delete this contents.');
+            yield Promise.reject(ERROR.INVALID_INPUT);
         }
 
         return result;

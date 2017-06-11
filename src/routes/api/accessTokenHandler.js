@@ -1,6 +1,7 @@
 import co from 'co';
 import * as db from '../../model/util/db';
 import { errorHandler } from '../representation/error';
+import { ERROR } from '../util/error';
 
 function accessTokenHandler(req, res, next) {
     co(function* () {
@@ -14,11 +15,7 @@ function accessTokenHandler(req, res, next) {
         result = yield db.query(sql, params);
 
         if (result.length < 1) {
-            return Promise.reject({
-                code: '4000',
-                title: 'Security Error',
-                message: 'Authentication Required!'
-            });
+            return Promise.reject(ERROR.AUTHENTICATION_REQUIRED);
         }
 
         return result[0];

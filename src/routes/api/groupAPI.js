@@ -3,7 +3,7 @@ import * as group from '../representation/group';
 import * as error from '../representation/error';
 import * as dao from '../../model/dao/groupDAO';
 import { headerSet } from '../util/httpHeaders';
-import * as requestUrlUtil from '../util/requestUrlUtil';
+import { STATUS } from '../util/httpStatusCode';
 
 const router = express.Router();
 
@@ -17,13 +17,9 @@ router.post('/', (req, res, next) => {
 
   dao.create(template, token)
     .then(result => {
-      res.status(201).set(headerSet).end();
-    }, err => {
-      error.errorHandler(req, res, {
-        code: '1000',
-        title: 'Error Ocurred',
-        message: err
-      });
+      res.status(STATUS.CREATED).set(headerSet).end();
+    }).catch(err => {
+      error.errorHandler(req, res, err);
     });
 });
 
@@ -33,11 +29,7 @@ router.get('/list', (req, res, next) => {
   dao.list().then(result => {
     group.groupListHandler(req, res, result);
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 
@@ -52,11 +44,7 @@ router.get('/:idx', (req, res, next) => {
   dao.detail(idx, token).then(result => {
     group.groupDetailHandler(req, res, result);
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 
@@ -64,15 +52,11 @@ router.put('/:idx', (req, res, next) => {
   let idx = req.params.idx;
   let template = group.createGroupFromTemplate(req.body);
   let token = req.get('Access-Token');
-  // todo: 수정 시 created도 바뀜.
+
   dao.modify(idx, template, token).then(result => {
-    res.status(204).set(headerSet).end();
+    res.status(STATUS.NO_CONTENT).set(headerSet).end();
   }).catch(err => {
-    error.errorHandler(req, res, {
-      code: '1000',
-      title: 'Error Ocurred',
-      message: err
-    });
+    error.errorHandler(req, res, err);
   });
 });
 
@@ -82,13 +66,9 @@ router.delete('/:idx', (req, res, next) => {
 
   dao.remove(idx, token)
     .then(result => {
-      res.status(204).set(headerSet).end();
+      res.status(STATUS.NO_CONTENT).set(headerSet).end();
     }).catch(err => {
-      error.errorHandler(req, res, {
-        code: '1000',
-        title: 'Error Ocurred',
-        message: err
-      });
+      error.errorHandler(req, res, err);
     });
 });
 

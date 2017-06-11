@@ -145,5 +145,3 @@ module.exports = {
 	getMonthlyCalendarUrl: getMonthlyCalendarUrl,
 	getDailyCalendarUrl: getDailyCalendarUrl,
 };
-
-// todo : calendar api rules...
