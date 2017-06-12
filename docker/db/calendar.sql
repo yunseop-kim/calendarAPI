@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.5-10.2.6-MariaDB)
 # Database: calendar
-# Generation Time: 2017-06-11 22:19:02 +0000
+# Generation Time: 2017-06-12 00:31:53 +0000
 # ************************************************************
 
 
@@ -27,14 +27,23 @@ DROP TABLE IF EXISTS `access_token`;
 
 CREATE TABLE `access_token` (
   `token` varchar(255) NOT NULL,
-  `created` timestamp NULL DEFAULT NULL,
-  `expired` timestamp NULL DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `expired` datetime DEFAULT NULL,
   `users_idx` int(11) NOT NULL,
   PRIMARY KEY (`token`),
   KEY `fk_access_token_users1_idx` (`users_idx`),
   CONSTRAINT `fk_access_token_users1` FOREIGN KEY (`users_idx`) REFERENCES `users` (`idx`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `access_token` WRITE;
+/*!40000 ALTER TABLE `access_token` DISABLE KEYS */;
+
+INSERT INTO `access_token` (`token`, `created`, `expired`, `users_idx`)
+VALUES
+	('cda62a7405f08a203d1b415155b62fa297d2f3b1ce4fc19dddd15fcff8093ccb','2017-06-12 00:13:51','2017-07-12 00:43:51',1);
+
+/*!40000 ALTER TABLE `access_token` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table groups
@@ -54,6 +63,17 @@ CREATE TABLE `groups` (
   CONSTRAINT `fk_groups_users1` FOREIGN KEY (`users_idx`) REFERENCES `users` (`idx`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `groups` WRITE;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+
+INSERT INTO `groups` (`idx`, `name`, `users_idx`, `created`, `modified`)
+VALUES
+	(5,'group2',1,'2017-06-12 00:47:16','2017-06-19 00:47:16'),
+	(6,'group3',1,'2017-06-12 00:47:20','2017-06-12 00:47:20'),
+	(8,'ttteeesssttt',1,'2017-06-12 05:27:59','2017-06-12 05:27:59');
+
+/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table groups_has_users
@@ -71,6 +91,17 @@ CREATE TABLE `groups_has_users` (
   CONSTRAINT `fk_groups_has_users_users1` FOREIGN KEY (`users_idx`) REFERENCES `users` (`idx`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `groups_has_users` WRITE;
+/*!40000 ALTER TABLE `groups_has_users` DISABLE KEYS */;
+
+INSERT INTO `groups_has_users` (`groups_idx`, `users_idx`, `selected`)
+VALUES
+	(5,1,0),
+	(6,1,1),
+	(8,1,1);
+
+/*!40000 ALTER TABLE `groups_has_users` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table schedules
@@ -80,9 +111,10 @@ DROP TABLE IF EXISTS `schedules`;
 
 CREATE TABLE `schedules` (
   `idx` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `type` char(2) DEFAULT NULL,
   `users_idx` int(11) NOT NULL,
   `groups_idx` int(11) DEFAULT NULL,
   PRIMARY KEY (`idx`),
@@ -92,6 +124,18 @@ CREATE TABLE `schedules` (
   CONSTRAINT `fk_schedules_users1` FOREIGN KEY (`users_idx`) REFERENCES `users` (`idx`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `schedules` WRITE;
+/*!40000 ALTER TABLE `schedules` DISABLE KEYS */;
+
+INSERT INTO `schedules` (`idx`, `title`, `start_date`, `end_date`, `type`, `users_idx`, `groups_idx`)
+VALUES
+	(1,'ttteeesssttt','2017-06-12 05:15:45','2017-06-12 05:15:45',NULL,1,NULL),
+	(2,'schedule 2','2017-06-12 00:00:00','2017-06-12 00:00:00',NULL,1,5),
+	(4,'owww','2017-06-12 04:09:28','2017-06-12 04:09:31',NULL,1,6),
+	(5,'schedule 5','2017-06-08 00:00:00','2017-06-09 00:00:00',NULL,1,NULL);
+
+/*!40000 ALTER TABLE `schedules` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table users

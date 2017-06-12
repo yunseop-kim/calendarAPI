@@ -2,6 +2,9 @@
 ## description
 - Database: MySQL
     - SQL File Path : calendar.sql
+- Login Info
+    - email: admin@mydomain.com
+    - password: 1234
 
 ## API
 **Login Representation**
